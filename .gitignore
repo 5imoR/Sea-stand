@@ -28,7 +28,7 @@ codegen/
 .code/
 
 # Cache files
-# *.slxc
+*.slxc
 .cache/
 
 # Cloud based storage dotfile

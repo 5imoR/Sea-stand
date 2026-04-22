@@ -3,7 +3,6 @@ clear all, clc, close all
 
 load ('../param.mat'); % motor parameters
 load ('../est_param.mat'); % estimated parameters (J_eq, B_eq, tau_sf)
-Jeq = J_eq_est; Beq = B_eq_est; Tausf = tau_sf_est; 
 load ('../PID_parameters.mat') % Kp, Ki, Kd and Tl (real derivative)
 Tl = 3/2*Tl;
 

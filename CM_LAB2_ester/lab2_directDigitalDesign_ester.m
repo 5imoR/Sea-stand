@@ -11,10 +11,9 @@ step_amplitude = 50;
 
 load ('../param.mat'); % motor parameters
 load ('../est_param.mat'); % estimated parameters (J_eq, B_eq, tau_sf)
-Jeq = J_eq_est; Beq = B_eq_est; Tausf = tau_sf_est; 
 
 % Plant
-load('../ssPlant_param.mat', 'A','B','C','D', 'lambda', 'w_n', 'lambda_e')
+load('../ssPlant_param.mat', 'A','B','C','D', 'lambda', 'w_n', 'lambda_e', 'sigma')
 plant_ct = ss(A,B,C,D);
 plant_dt = c2d(plant_ct,T,'zoh'); % discretized system
 [phi, gamma, H, J] = ssdata(plant_dt);
@@ -27,7 +26,7 @@ Nx = N_xu(1:2);
 Nu = N_xu(3);
 
 % Observer
-lambda_o = -5 * w_n; 
+lambda_o = 5*sigma; 
 lambda_o_dt = exp(lambda_o*T); % Observer pole in z-plane
 
 phi11 = phi(1,1); phi22 = phi(2,2); phi12 = phi(1,2); phi21 = phi(2,1);
@@ -57,3 +56,4 @@ elseif tracking_choice == 2 % robust control
 end 
 
 out = sim("digitalDesign_ester.slx");
+disp(max(out.thl));

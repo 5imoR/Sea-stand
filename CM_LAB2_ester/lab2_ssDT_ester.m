@@ -4,14 +4,13 @@ clc
 
 disp('=== SETUP SIMULAZIONE ===')
 tracking_choice = input('Choose architecture (1 = Nominal Tracking, 2 = Robust Tracking): ');
-method_choice = input('Choose discretization method (1 = F. Euler, 2 = B. Euler, 3 = Tustin): ');
+method_choice = input('Choose discretization method (1 = B. Euler, 2 = F. Euler, 3 = Tustin): ');
 %step_amplitude = input('Select step amplitude (es. 40, 70, 120): ');
 T = input('Select sample time (0.001, 0.01, 0.05) [s]: ');
 disp('=========================')
 
 load ('../param.mat'); % motor parameters
 load ('../est_param.mat'); % estimated parameters (J_eq, B_eq, tau_sf)
-Jeq = J_eq_est; Beq = B_eq_est; Tausf = tau_sf_est; 
 step_amplitude = 50;
 
 % sampleTime_options = [0.001 0.01 0.05]; % sampling time [s] 
@@ -38,12 +37,12 @@ Co = [0; 1];
 Do = [0, 1; 0, L];
 
 % State space matrices in the DT case
-if method_choice == 1 % Forward Euler
+if method_choice == 2 % Forward Euler
     phi_o = 1 + Ao*T;
     gamma_o = Bo*T;
     Ho = Co;
     Jo = Do;
-elseif method_choice == 2 % Backward Euler
+elseif method_choice == 1 % Backward Euler
     phi_o = 1/(1-Ao*T);
     gamma_o = phi_o*Bo*T;
     Ho = Co*phi_o;

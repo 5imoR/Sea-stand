@@ -61,4 +61,4 @@ elseif tracking_choice == 2
 end 
 
 out = sim("ss2DT_ester.slx");
-
+disp(max(out.thl))

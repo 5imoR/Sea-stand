@@ -39,7 +39,9 @@ sysCd_int = c2d(sysC_int, T, 'zoh');
 [Ni_exact, Di_exact] = tfdata(sysCd_int, 'v');
 
 %% simulation 
-out = sim("sim2_ester.slx");
-disp(max(out.thl))
+%out = sim("sim2_ester.slx");
+%disp(max(out.thl))
+
+save("LAB2_1_PID_",'thl_pid_0001_v','sat_pid');
 
 

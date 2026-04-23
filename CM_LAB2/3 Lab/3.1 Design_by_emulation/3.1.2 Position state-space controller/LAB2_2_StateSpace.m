@@ -4,7 +4,8 @@ clc
 
 disp('=== SETUP SIMULAZIONE ===')
 tracking_choice = input('Choose architecture (1 = Nominal Tracking, 2 = Robust Tracking): ');
-method_choice = input('Choose discretization method (1 = B. Euler, 2 = F. Euler, 3 = Tustin): ');
+%method_choice = input('Choose discretization method (1 = B. Euler, 2 = F. Euler, 3 = Tustin): ');
+method_choice = 2;
 %step_amplitude = input('Select step amplitude (es. 40, 70, 120): ');
 T = input('Select sample time (0.001, 0.01, 0.05) [s]: ');
 disp('=========================')

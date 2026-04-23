@@ -55,5 +55,23 @@ elseif tracking_choice == 2 % robust control
     Nr = Nu + K * Nx; % feedforward gain
 end 
 
-out = sim("digitalDesign_ester.slx");
-disp(max(out.thl));
+%% Simulation
+% out = sim("digitalDesign_ester.slx"); % CHANGE NAME!!
+% disp(max(out.thl));
+
+%% Save results in struct 
+filename = 'results_LAB2_2_DirectDigitalDesign.mat';
+
+tracking_names = {'Nominal Tracking', 'Robust Tracking'};
+
+% Determine the fields of the structure
+current_track = tracking_names{tracking_choice};      
+current_T = sprintf('T_%s', strrep(num2str(T), '.', '_')); 
+
+load(filename, 'results');
+
+% Complete the structure with simulation data
+results.(current_track).(current_T) = out;
+
+% Overwrite and save the .mat file 
+save(filename, 'results');

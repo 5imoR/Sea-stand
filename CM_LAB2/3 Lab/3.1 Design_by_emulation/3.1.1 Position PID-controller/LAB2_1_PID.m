@@ -38,10 +38,27 @@ sysC_int = tf(1, [1 0]);
 sysCd_int = c2d(sysC_int, T, 'zoh'); 
 [Ni_exact, Di_exact] = tfdata(sysCd_int, 'v');
 
-%% simulation 
+%% Simulation 
 %out = sim("sim2_ester.slx");
 %disp(max(out.thl))
 
-save("LAB2_1_PID_",'thl_pid_0001_v','sat_pid');
+%% Save results in struct 
+filename = 'results_LAB2_1_PID.mat';
+
+method_names = {'BE', 'FE', 'Tustin', 'Exact'};
+arch_names = {'No_AW', 'With_AW'};
+
+% Determine the fields of the structure
+current_method = method_names{method_choice};        
+current_arch = arch_names{arch_choice};      
+current_T = sprintf('T_%s', strrep(num2str(T), '.', '_')); 
+
+load(filename, 'results');
+
+% Complete the structure with simulation data
+results.(current_method).(current_arch).(current_T) = out;
+
+% Overwrite and save the .mat file 
+save(filename, 'results');
 
 

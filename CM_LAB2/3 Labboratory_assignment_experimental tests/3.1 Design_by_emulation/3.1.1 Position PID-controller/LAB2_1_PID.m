@@ -8,7 +8,7 @@ Tl = 3/2*Tl;
 
 T = input('Select sample time (0.001, 0.01, 0.05) [s]: ');
 arch_choice = input('Choose architecture  (1 = No anti-windup, 2 = With anti-windup): ');
-method_choice = input('Choose discretization method (1 = B. Euler, 2 = F. Euler, 3 = Tustin): ');
+method_choice = input('Choose discretization method (1 = B. Euler, 2 = F. Euler, 3 = Tustin, 4 = Exact): ');
 
 if arch_choice == 1
     step_amplitude = 50; % step reference input [deg]
@@ -20,16 +20,23 @@ end
 %% Derivator implementation
 % tustin 
 sysC_deriv = tf([1, 0], [Tl, 1]); 
-% s = tf('s');
-% sysCd_deriv = s/(Tl*s)+1;
 sysCd_deriv = c2d(sysC_deriv, T, 'tustin'); 
 [N3, D3] = tfdata(sysCd_deriv, 'v');
 
-Nd_options = [[1, -1]; [1, -1]; N3];
-Dd_options = [[Tl+T, -Tl]; [Tl, T-Tl]; D3]; % 1:BE 2:FE 3:tustin
+% exact
+sysCd_deriv_e = c2d(sysC_deriv, T, 'zoh'); 
+[N4, D4] = tfdata(sysCd_deriv_e, 'v');
+
+Nd_options = [[1, -1]; [1, -1]; N3; N4];
+Dd_options = [[Tl+T, -Tl]; [Tl, T-Tl]; D3; D4]; % 1:BE 2:FE 3:tustin 4:Exact
 Nd = Nd_options(method_choice,:);
 Dd = Dd_options(method_choice,:);
 
+%% Integrator implementation
+% exact
+sysC_int = tf(1, [1 0]); 
+sysCd_int = c2d(sysC_int, T, 'zoh'); 
+[Ni_exact, Di_exact] = tfdata(sysCd_int, 'v');
 
 %% simulation 
 out = sim("sim2_ester.slx");

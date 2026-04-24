@@ -1,14 +1,17 @@
 %% LABORATORIO 2 - DESIGN BY EMULATION
 clear all, clc, close all
 
-load ('../param.mat'); % motor parameters
-load ('../est_param.mat'); % estimated parameters (J_eq, B_eq, tau_sf)
-load ('../PID_parameters.mat') % Kp, Ki, Kd and Tl (real derivative)
+load ('./../../../../param.mat'); % motor parameters
+load ('./../../../../est_param.mat'); % estimated parameters (J_eq, B_eq, tau_sf)
+load ('./../../../../PID_parameters.mat') % Kp, Ki, Kd and Tl (real derivative)
 Tl = 3/2*Tl;
 
-T = input('Select sample time (0.001, 0.01, 0.05) [s]: ');
-arch_choice = input('Choose architecture  (1 = No anti-windup, 2 = With anti-windup): ');
-method_choice = input('Choose discretization method (1 = B. Euler, 2 = F. Euler, 3 = Tustin, 4 = Exact): ');
+%T = input('Select sample time (0.001, 0.01, 0.05) [s]: ');
+%arch_choice = input('Choose architecture  (1 = No anti-windup, 2 = With anti-windup (360 deg), 3 = No anti-windup (360 deg)): ');
+%method_choice = input('Choose discretization method (1 = B. Euler, 2 = F. Euler, 3 = Tustin, 4 = Exact): ');
+T=0.01;
+arch_choice=3;
+method_choice=1;
 
 if arch_choice == 1
     step_amplitude = 50; % step reference input [deg]
@@ -16,8 +19,11 @@ if arch_choice == 1
 elseif arch_choice == 2
     step_amplitude = 360; % step reference input [deg]
     Kw = 5/0.15;% anti-windup gain
+elseif arch_choice == 3
+    step_amplitude = 360;
+    Kw = 0;
 end
-%% Derivator implementation
+% Derivator implementation
 % tustin 
 sysC_deriv = tf([1, 0], [Tl, 1]); 
 sysCd_deriv = c2d(sysC_deriv, T, 'tustin'); 
@@ -32,13 +38,13 @@ Dd_options = [[Tl+T, -Tl]; [Tl, T-Tl]; D3; D4]; % 1:BE 2:FE 3:tustin 4:Exact
 Nd = Nd_options(method_choice,:);
 Dd = Dd_options(method_choice,:);
 
-%% Integrator implementation
+% Integrator implementation
 % exact
 sysC_int = tf(1, [1 0]); 
 sysCd_int = c2d(sysC_int, T, 'zoh'); 
 [Ni_exact, Di_exact] = tfdata(sysCd_int, 'v');
 
-%% Simulation 
+% Simulation 
 %out = sim("sim2_ester.slx");
 %disp(max(out.thl))
 
@@ -46,7 +52,7 @@ sysCd_int = c2d(sysC_int, T, 'zoh');
 filename = 'results_LAB2_1_PID.mat';
 
 method_names = {'BE', 'FE', 'Tustin', 'Exact'};
-arch_names = {'No_AW', 'With_AW'};
+arch_names = {'No_AW', 'With_AW_360deg', 'No_AW_360deg'};
 
 % Determine the fields of the structure
 current_method = method_names{method_choice};        
@@ -56,7 +62,10 @@ current_T = sprintf('T_%s', strrep(num2str(T), '.', '_'));
 load(filename, 'results');
 
 % Complete the structure with simulation data
-results.(current_method).(current_arch).(current_T) = out;
+sim_data = struct();
+sim_data.thl = thl;
+sim_data.sat = sat;
+results.(current_method).(current_arch).(current_T) = sim_data;
 
 % Overwrite and save the .mat file 
 save(filename, 'results');

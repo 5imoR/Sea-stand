@@ -2,29 +2,33 @@
 clear all
 clc
 
-disp('=== SETUP SIMULAZIONE ===')
-tracking_choice = input('Choose architecture (1 = Nominal Tracking, 2 = Robust Tracking): ');
-%method_choice = input('Choose discretization method (1 = B. Euler, 2 = F. Euler, 3 = Tustin): ');
-method_choice = 2;
-%step_amplitude = input('Select step amplitude (es. 40, 70, 120): ');
-T = input('Select sample time (0.001, 0.01, 0.05) [s]: ');
-disp('=========================')
 
-load ('../param.mat'); % motor parameters
-load ('../est_param.mat'); % estimated parameters (J_eq, B_eq, tau_sf)
+%tracking_choice = input('Choose architecture (1 = Nominal Tracking, 2 = Robust Tracking): ');
+%method_choice = input('Choose discretization method (1 = B. Euler, 2 = F. Euler, 3 = Tustin): ');
+%step_amplitude = input('Select step amplitude (es. 40, 70, 120): ');
+%T = input('Select sample time (0.001, 0.01, 0.05) [s]: ');
+
+
+load ('./../../../../param.mat'); % motor parameters
+load ('./../../../../est_param.mat'); % estimated parameters (J_eq, B_eq, tau_sf)
+load ('./../../../../PID_parameters.mat') % Kp, Ki, Kd and Tl (real derivative)
+
+method_choice = 2;
 step_amplitude = 50;
+T = 0.05;
+tracking_choice = 2;
 
 % sampleTime_options = [0.001 0.01 0.05]; % sampling time [s] 
 % T = sampleTime_options(3);
 % % Choose architecture: 1= Nominal Tracking, 2=Robust Tracking
-% tracking_choice = 2;
+
 % % Choose discretization method: 1 = FE, 2 = BE, 3 = Tustin
 % method_choice = 1;
 
-%% PLANT 
-load('../ssPlant_param.mat')
+% PLANT 
+load('./../../../../ssPlant_param.mat')
 
-%% OBSERVER 
+% OBSERVER 
 % Pole
 lambda_o = 5 * sigma; 
 
@@ -66,7 +70,7 @@ end
 %% Save results in struct 
 filename = 'results_LAB2_2_StateSpace.mat';
 
-tracking_names = {'Nominal Tracking', 'Robust Tracking'};
+tracking_names = {'Nominal_Tracking', 'Robust_Tracking'};
 
 % Determine the fields of the structure
 current_track = tracking_names{tracking_choice};      
@@ -75,7 +79,10 @@ current_T = sprintf('T_%s', strrep(num2str(T), '.', '_'));
 load(filename, 'results');
 
 % Complete the structure with simulation data
-results.(current_track).(current_T) = out;
+sim_data = struct();
+sim_data.thl_est = thl_est;
+sim_data.thl_meas = thl_meas;
+results.(current_track).(current_T) = sim_data;
 
 % Overwrite and save the .mat file 
 save(filename, 'results');

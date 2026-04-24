@@ -2,26 +2,23 @@
 clear all
 clc
 
-disp('=== SETUP SIMULAZIONE ===')
-tracking_choice = input('Choose architecture (1 = Nominal Tracking, 2 = Robust Tracking): ');
-method_choice = input('Choose discretization method (1 = B. Euler, 2 = F. Euler, 3 = Tustin): ');
+%disp('=== SETUP SIMULAZIONE ===')
+%tracking_choice = input('Choose architecture (1 = Nominal Tracking, 2 = Robust Tracking): ');
+%method_choice = input('Choose discretization method (1 = B. Euler, 2 = F. Euler, 3 = Tustin): ');
 %step_amplitude = input('Select step amplitude (es. 40, 70, 120): ');
-T = input('Select sample time (0.001, 0.01, 0.05) [s]: ');
-disp('=========================')
+%T = input('Select sample time (0.001, 0.01, 0.05) [s]: ');
+%disp('=========================')
 
-load ('../param.mat'); % motor parameters
-load ('../est_param.mat'); % estimated parameters (J_eq, B_eq, tau_sf)
+load ('./../../../../param.mat'); % motor parameters
+load ('./../../../../est_param.mat'); % estimated parameters (J_eq, B_eq, tau_sf)
+
+tracking_choice = 1;
+T = 0.01;
 step_amplitude = 50;
-
-% sampleTime_options = [0.001 0.01 0.05]; % sampling time [s] 
-% T = sampleTime_options(3);
-% % Choose architecture: 1= Nominal Tracking, 2=Robust Tracking
-% tracking_choice = 2;
-% % Choose discretization method: 1 = FE, 2 = BE, 3 = Tustin
-% method_choice = 1;
+method_choice = 1;
 
 %% PLANT 
-load('../ssPlant_param.mat')
+load('./../../../../ssPlant_param.mat')
 
 %% OBSERVER 
 % Pole
@@ -60,5 +57,5 @@ elseif tracking_choice == 2
     Nr = Nr2;
 end 
 
-out = sim("ss2DT_ester.slx");
+out = sim("LAB2_2_ssDT_sim.slx");
 disp(max(out.thl))

@@ -1,9 +1,9 @@
 %% LABORATORIO 2 - DESIGN BY EMULATION
 clear all, clc, close all
 
-load ('../param.mat'); % motor parameters
-load ('../est_param.mat'); % estimated parameters (J_eq, B_eq, tau_sf)
-load ('../PID_parameters.mat') % Kp, Ki, Kd and Tl (real derivative)
+load ('./../../../../param.mat'); % motor parameters
+load ('./../../../../est_param.mat'); % estimated parameters (J_eq, B_eq, tau_sf)
+load ('./../../../../PID_parameters.mat') % Kp, Ki, Kd and Tl (real derivative)
 Tl = 3/2*Tl;
 
 T = input('Select sample time (0.001, 0.01, 0.05) [s]: ');
@@ -39,7 +39,7 @@ sysCd_int = c2d(sysC_int, T, 'zoh');
 [Ni_exact, Di_exact] = tfdata(sysCd_int, 'v');
 
 %% simulation 
-out = sim("sim2_ester.slx");
+out = sim("LAB2_1_PID_sim.slx");
 disp(max(out.thl))
 
 

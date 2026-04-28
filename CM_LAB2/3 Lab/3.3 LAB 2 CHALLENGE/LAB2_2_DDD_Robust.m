@@ -26,7 +26,7 @@ delta = (log(1/Mp)) / sqrt(pi^2 + (log(1/Mp))^2);
 w_n = 3 / (delta * ts); 
 
 sigma = -15; %-delta*w_n; % real part
-omega_d =4.0931 %w_n*sqrt(1-delta^2)*0.2; % imaginary part
+omega_d = 4.0931; %w_n*sqrt(1-delta^2)*0.2; % imaginary part
 sigma3 = -2.11;
 
 lambda = [sigma + 1i*omega_d; sigma - 1i*omega_d]; % vector of poles

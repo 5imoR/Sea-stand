@@ -8,7 +8,7 @@ clc
 % disp('=========================')
 
 step_amplitude = 60;
-T=0.2;
+T=0.19;
 tracking_choice=2;
 
 load ('./../../../param.mat'); % motor parameters
@@ -19,15 +19,15 @@ load('./../../../ssPlant_param.mat', 'A','B','C','D')
 
 % specs
 Mp = 0.1;
-ts = 0.20;
+ts = 0.2;
 Kw=25;
 % poles (lambda)
 delta = (log(1/Mp)) / sqrt(pi^2 + (log(1/Mp))^2);
 w_n = 3 / (delta * ts); 
 
-sigma = -delta*w_n*0.8; % real part
-omega_d =w_n*sqrt(1-delta^2)*0.8; % imaginary part
-sigma3 = -1;
+sigma = -15; %-delta*w_n; % real part
+omega_d =4.0931 %w_n*sqrt(1-delta^2)*0.2; % imaginary part
+sigma3 = -2.11;
 
 lambda = [sigma + 1i*omega_d; sigma - 1i*omega_d]; % vector of poles
 

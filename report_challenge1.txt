@@ -1,0 +1,90 @@
+\documentclass[11pt]{article}
+
+% *** PAGE LAYOUT ***
+\usepackage{geometry}     
+\geometry{a4paper,tmargin=2cm,bmargin=2cm,lmargin=2.5cm,rmargin=2.5cm}
+
+% *** DEFAULT FONT SELECTION ***
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\renewcommand*\familydefault{\sfdefault}
+
+% *** GRAPHICS *** \usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage[caption=false, font=footnotesize]{subfig} 
+
+% *** AMS MATH ***
+\usepackage{amsmath, amsfonts, amssymb}
+
+% *** MATLAB CODE ***
+\usepackage[numbered,framed]{matlab-prettifier}
+\lstset{
+  style=Matlab-editor,
+  basicstyle=\mlttfamily\scriptsize,
+  numbers=left,
+  numberstyle={\scriptsize \color[RGB]{147,147,147}},
+  numbersep=7pt,
+}
+
+% *** EXTRA COMMANDS DEFINITIONS ***
+\DeclareRobustCommand{\vect}[1]{ \boldsymbol{#1} }
+\interfootnotelinepenalty=10000
+
+\title{
+	{\Large Laboratory Report 1: Position state-space control of a DC servomotor}
+}
+\author{
+	Giuseppe Scarfò; Email: \texttt{giuseppe.scarfo.1@studenti.unipd.it}\\
+	Group: 11 (Curva Mare),
+    \\Components: Giuseppe Scarfò, Giovanni Emanuele Delprato, Ester Foschi, Simone Romio
+} 
+\date{April 13, 2026}
+
+\usepackage{fancyhdr}
+\lhead{} 
+\chead{}
+\rhead{}
+\lfoot{} 
+\cfoot{\textit{\scriptsize University of Padova}} 
+\rfoot{ \scriptsize \thepage/\pageref{LastPage} }  
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\begin{document}
+
+\maketitle				
+\pagestyle{fancy} 		
+\setcounter{page}{1}	
+
+% -------------------------------------------------------------------------------- %
+\section{Introduction}
+
+\input{CHAPTERS/1_ActivityGoal}
+
+\input{CHAPTERS/1.2_System&Model}
+
+\section{Tasks, Methodologies and Results}
+
+\subsection{Part 1: Position PID-control improvements}
+
+\input{CHAPTERS/2.1.1_IntegratorAnti-WindupMechanism}
+
+\input{CHAPTERS/2.1.2_Friction&InertiaFeedforwardCompensation}
+
+\subsection{Part 2: Position state-space control design}
+
+\input{CHAPTERS/2.2.1_NominalTrackingDesign}
+
+\input{CHAPTERS/2.2.2_RobustTracking_IntegralAction}
+
+\input{CHAPTERS/2.2.3_RobustTracking_Error-SpaceApproach}
+
+\input{CHAPTERS/2.2.4 RobustTracking_Extended-EstimatorApproach}
+
+\input{CHAPTERS/Appendix}
+
+\label{LastPage}
+\end{document}
+
+

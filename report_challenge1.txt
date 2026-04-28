@@ -1,90 +1,74 @@
-\documentclass[11pt]{article}
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
 
-% *** PAGE LAYOUT ***
-\usepackage{geometry}     
-\geometry{a4paper,tmargin=2cm,bmargin=2cm,lmargin=2.5cm,rmargin=2.5cm}
-
-% *** DEFAULT FONT SELECTION ***
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
-\renewcommand*\familydefault{\sfdefault}
-
-% *** GRAPHICS *** \usepackage{graphicx}
-\usepackage{xcolor}
-\usepackage{float}
-\usepackage[caption=false, font=footnotesize]{subfig} 
-
-% *** AMS MATH ***
-\usepackage{amsmath, amsfonts, amssymb}
-
-% *** MATLAB CODE ***
-\usepackage[numbered,framed]{matlab-prettifier}
-\lstset{
-  style=Matlab-editor,
-  basicstyle=\mlttfamily\scriptsize,
-  numbers=left,
-  numberstyle={\scriptsize \color[RGB]{147,147,147}},
-  numbersep=7pt,
-}
-
-% *** EXTRA COMMANDS DEFINITIONS ***
-\DeclareRobustCommand{\vect}[1]{ \boldsymbol{#1} }
-\interfootnotelinepenalty=10000
-
-\title{
-	{\Large Laboratory Report 1: Position state-space control of a DC servomotor}
-}
-\author{
-	Giuseppe Scarfò; Email: \texttt{giuseppe.scarfo.1@studenti.unipd.it}\\
-	Group: 11 (Curva Mare),
-    \\Components: Giuseppe Scarfò, Giovanni Emanuele Delprato, Ester Foschi, Simone Romio
-} 
-\date{April 13, 2026}
-
-\usepackage{fancyhdr}
-\lhead{} 
-\chead{}
-\rhead{}
-\lfoot{} 
-\cfoot{\textit{\scriptsize University of Padova}} 
-\rfoot{ \scriptsize \thepage/\pageref{LastPage} }  
-\renewcommand{\headrulewidth}{0pt}
-\renewcommand{\footrulewidth}{0pt}
+\title{\textbf{LAB 1 CHALLENGE: Position State-Space Control} [cite: 1]}
+\author{Giuseppe Scarfò, Simone Romio, Giovanni Emanuele Delprato, Ester Foschi [cite: 2]}
+\date{12 Aprile 2026 [cite: 2]}
 
 \begin{document}
 
-\maketitle				
-\pagestyle{fancy} 		
-\setcounter{page}{1}	
+\maketitle
 
-% -------------------------------------------------------------------------------- %
-\section{Introduction}
+\section{Control structure and strategy [cite: 3]}
 
-\input{CHAPTERS/1_ActivityGoal}
+\subsection{Preliminary Analysis [cite: 4]}
+Initially, the design was based on the standard criteria suggested in the handout. [cite: 5] However, the resulting response was not entirely satisfactory: the system exhibited a highly restrictive trade-off between speed and oscillations, failing to fully exploit the physical limits of the motor to minimize the rise time. [cite: 6] To overcome these limitations, we directly modified the pole placement of the extended system, aiming for a more aggressive yet controlled configuration. [cite: 7]
 
-\input{CHAPTERS/1.2_System&Model}
+\subsection{Controller Structure and Anti-Windup Mechanism [cite: 8]}
+To address the challenge, a state-space control strategy featuring integral action combined with an anti-windup mechanism was adopted. [cite: 9] The inclusion of the anti-windup scheme is essential because, in the attempt to drastically reduce the rise time, the controller frequently demands voltages that exceed the physical limits of the actuator (saturation). [cite: 10] Without this solution, the integrator would continue to accumulate the tracking error even when the motor is already operating at maximum power (the windup phenomenon). [cite: 11] This would result in massive overshoot and prolonged settling times once the system re-enters its linear operating region. [cite: 12] The local feedback loop of the anti-windup effectively "brakes" the integrator during saturation, ensuring it remains responsive as soon as the error decreases. [cite: 13] 
 
-\section{Tasks, Methodologies and Results}
+The control system relies on an extended state model $\Sigma_{e}=(A_{e},B_{e},C_{e},0)$ that incorporates the integrated error variable $x_{I}=\int(y-r)d\tau$ to guarantee asymptotic tracking of step references and the rejection of constant disturbances. [cite: 14] The anti-windup mechanism enables the use of high gains, meaning the closed-loop system poles can be placed significantly far from the imaginary axis (i.e., with a highly negative real part). [cite: 15]
 
-\subsection{Part 1: Position PID-control improvements}
+\subsection{Pole Placement Logic [cite: 16]}
+The pole placement logic was tuned to achieve a dominant first-order behavior. [cite: 17] Rather than opting for a pair of complex conjugate poles with low damping (typical of a second-order approximation) which, despite being fast, would introduce oscillations and risk violating the $M_{p}\le10\%$ constraint-we chose to make a real pole predominant. [cite: 18] This design choice yields an exponential-type response that is inherently free of oscillations. [cite: 19]
 
-\input{CHAPTERS/2.1.1_IntegratorAnti-WindupMechanism}
+\section{Controller Parameters [cite: 20]}
+The pole placement was performed using the MATLAB acker function. [cite: 21] The chosen values for the closed-loop system eigenvalues $(A_{e}-B_{e}K_{e})$ are as follows: [cite: 22]
+\begin{itemize}
+    \item Complex conjugate poles: $\lambda_{1,2}=-80\pm17j$ [cite: 23]
+    \item Integrator real pole: $\lambda_{3}=-11$ [cite: 24]
+\end{itemize}
 
-\input{CHAPTERS/2.1.2_Friction&InertiaFeedforwardCompensation}
+The resulting implementation parameters are: [cite: 25]
 
-\subsection{Part 2: Position state-space control design}
+\begin{table}[h]
+    \centering
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Parameter} & \textbf{Value} \\
+        \midrule
+        State matrix K & $[45.07 \quad 0.71]$ \\
+        Integrator gain $K_{I}$ & 392.51 \\
+        Anti-Windup gain $K_{W}$ & 10 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Calculated controller parameters. [cite: 27, 28]}
+    \label{tab:controller_params}
+\end{table}
 
-\input{CHAPTERS/2.2.1_NominalTrackingDesign}
+\section{Experimental Results (Black-Box Model) [cite: 29]}
 
-\input{CHAPTERS/2.2.2_RobustTracking_IntegralAction}
+% Assicurati di inserire l'immagine corretta rinominandola in "figure1.png" nella stessa cartella, oppure commenta la riga \includegraphics
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figure1.png} 
+    \caption{System response to a $70^{\circ}$ step input (Black-Box model). [cite: 43]}
+    \label{fig:step_response}
+\end{figure}
 
-\input{CHAPTERS/2.2.3_RobustTracking_Error-SpaceApproach}
+The performance metrics obtained using the stepinfo function are summarized below: [cite: 44]
+\begin{itemize}
+    \item Rise time (tr, 10\%-90\%): 0.037 s [cite: 45]
+    \item Overshoot $(M_{p})$: 9.54\% [cite: 46]
+    \item Peak value: 76.68 deg [cite: 47]
+\end{itemize}
 
-\input{CHAPTERS/2.2.4 RobustTracking_Extended-EstimatorApproach}
+\section{Conclusions [cite: 48]}
+The achieved $t_{T}$ value represents the performance limit reached while ensuring system stability and compliance with the overshoot specifications. [cite: 49] The combined use of integral action and anti-windup proved fundamental in maximizing the responsiveness of the Quanser SRV-02 motor. [cite: 50]
 
-\input{CHAPTERS/Appendix}
-
-\label{LastPage}
 \end{document}
-
-

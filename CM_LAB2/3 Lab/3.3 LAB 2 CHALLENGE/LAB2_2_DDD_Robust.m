@@ -1,11 +1,6 @@
-%% LABORATORIO 2 - DIRECT DIGITAL DESIGN
+%% LABORATORIO 2 CHALLENGE - DIRECT DIGITAL DESIGN
 clear all
 clc
-
-%disp('=== SETUP SIMULAZIONE ===')
-%tracking_choice = input('Choose architecture (1 = Nominal Tracking, 2 = Robust Tracking): ');
-%T = input('Select sample time (0.001, 0.01, 0.05) [s]: ');
-% disp('=========================')
 
 step_amplitude = 60;
 T=0.19;
@@ -21,17 +16,17 @@ load('./../../../ssPlant_param.mat', 'A','B','C','D')
 Mp = 0.1;
 ts = 0.2;
 Kw=25;
+
 % poles (lambda)
 delta = (log(1/Mp)) / sqrt(pi^2 + (log(1/Mp))^2);
 w_n = 3 / (delta * ts); 
-
-sigma = -15; %-delta*w_n; % real part
-omega_d = 4.0931; %w_n*sqrt(1-delta^2)*0.2; % imaginary part
+sigma = -15; 
+omega_d = 4.0931; 
 sigma3 = -2.11;
 
 lambda = [sigma + 1i*omega_d; sigma - 1i*omega_d]; % vector of poles
 
-
+% Discrete State-Space
 plant_ct = ss(A,B,C,D);
 plant_dt = c2d(plant_ct,T,'zoh'); % discretized system
 [phi, gamma, H, J] = ssdata(plant_dt);
@@ -43,7 +38,7 @@ N_xu = [phi-eye(2), gamma; H, 0]\[0; 0; 1];
 Nx = N_xu(1:2);
 Nu = N_xu(3);
 
-% Observer
+% Discrete Observer
 lambda_o = 5*sigma; 
 lambda_o_dt = exp(lambda_o*T); % Observer pole in z-plane
 
@@ -67,26 +62,59 @@ K = Ke(2:3);
 Nr = Nu + K * Nx; % feedforward gain
  
 
-% Simulation
-% out = sim("digitalDesign_ester.slx"); % CHANGE NAME!!
-% disp(max(out.thl));
 
-% %% Save results in struct 
-% filename = 'results_LAB2_2_DirectDigitalDesign.mat';
-% 
-% tracking_names = {'Nominal_Tracking', 'Robust_Tracking'};
-% 
-% % Determine the fields of the structure
-% current_track = tracking_names{tracking_choice};      
-% current_T = sprintf('T_%s', strrep(num2str(T), '.', '_')); 
-% 
-% load(filename, 'results');
-% 
-% % Complete the structure with simulation data
-% sim_data = struct();
-% sim_data.thl_est = thl_est;
-% sim_data.thl_meas = thl_meas;
-% results.(current_track).(current_T) = sim_data;
-% 
-% % Overwrite and save the .mat file 
-% save(filename, 'results');
+%% --- ESTRAZIONE DATI E PLOT ---
+% Assicurati che i blocchi "To Workspace" siano impostati su "Structure with Time"
+t = out.thl.time;
+y = out.thl.signals.values; % Previene problemi di dimensioni
+r = out.ref.signals.values;
+
+% Valore di regime del gradino (partendo da t=0)
+r_final = r(end); 
+
+% Calcolo dei limiti di assestamento (±5%)
+upper_bound = r_final * 1.05;
+lower_bound = r_final * 0.95;
+
+% Creazione Grafico
+figure('Name', 'Tracking Performance', 'NumberTitle', 'off');
+plot(t, r, 'b', 'LineWidth', 1.2); hold on;
+plot(t, y, 'r', 'LineWidth', 1.2);
+
+% Plot dei limiti al 5% con linea TRATTEGGIzATA ('r--')
+plot(t, upper_bound * ones(size(t)), 'g--', 'LineWidth', 1);
+plot(t, lower_bound * ones(size(t)), 'm--', 'LineWidth', 1);
+
+% Formattazione grafico
+xlabel('Time [s]');
+ylabel('\theta_L (Amplitude)');
+title('Step Response');
+legend('Reference', 'Output (\theta_L)', '+5% Bound', '-5% Bound', 'Location', 'Southeast');
+grid on;
+xlim([0, t(end)]);
+
+%% --- VALUTAZIONE PERFORMANCE ---
+
+% 1. Calcolo del TEMPO DI ASSESTAMENTO e SOVRAELONGAZIONE sui dati simulati
+info = stepinfo(y, t, r_final, 'SettlingTimeThreshold', 0.05);
+
+% 2. Calcolo dell'ERRORE A REGIME TEORICO (Indipendente dalla durata della simulazione)
+% Costruiamo il sistema a ciclo chiuso teorico: x(k+1) = (Phi - Gamma*K)x(k) + Gamma*Nr*r(k)
+Phi_cl = phi - gamma * K;
+Gamma_cl = gamma * Nr;
+C_cl = H; % Assumiamo J (o D) = 0, comune per questi sistemi fisici
+D_cl = 0;
+
+sys_cl_dt = ss(Phi_cl, Gamma_cl, C_cl, D_cl, T);
+DC_gain = dcgain(sys_cl_dt); % Guadagno in continua del sistema discreto
+
+% Valore di output a regime teorico e rispettivo errore
+y_ss_theoretical = DC_gain * r_final;
+ss_error_theoretical = r_final - y_ss_theoretical;
+
+% Stampa dei risultati nella Command Window
+fprintf('\n=== PERFORMANCE METRICS ===\n');
+fprintf('Tempo di assestamento (5%%): %.4f s\n', info.SettlingTime);
+fprintf('Sovraelongazione (Mp):      %.2f %%\n', info.Overshoot);
+fprintf('Errore a regime (teorico):  %.4e\n', ss_error_theoretical);
+fprintf('===========================\n\n');

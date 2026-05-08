@@ -1,37 +1,22 @@
 %% ESTIMATION PARAMETER Bb & k
-%clear all
+clear all
 clc
 
 load ('./../resonant_params.mat','mld'); % motor and load parameters
-
+load ('./../resonant_params.mat','sens');   
 wn = sqrt(mld.k/mld.Jb);
 delta = mld.Bb/(2*sqrt(mld.Jb*mld.k));
 w = wn*sqrt(1-delta^2);
 Ts = 0.001;
+t1 = 0.7;
+t0 = 0.2;
 
 %%
 % Estimation of natural frequency and damping factor
-thd_abs = abs(out.thd.signals.values);
-t = out.thd.time;
+valid_idx = thd.time >= 1.0; 
+t = thd.time(valid_idx);
+thd_abs = abs(thd.signals.values(valid_idx));
 
-% tk_vector = [];
-% thd_k_vector = [];
-% 
-%SOL 1
-%  for index = 2:length(thd_abs)-1
-%     if thd_abs(index)>thd_abs(index-1) && thd_abs(index)>thd_abs(index+1)
-%         thd_k_vector = [thd_k_vector thd_abs(index)];
-%         tk_vector = [tk_vector t(index)];
-%     end 
-% end 
-% 
-% SOL 2
-% index = islocalmax(thd_abs);
-% index_peaks = find(index == true & thd_abs > 1);
-% thd_k_vector = thd_abs(index_peaks);
-% tk_vector = t(index_peaks);
-
-% SOL 3 - Signal Processing toolbox needed
 delta_tk = pi / w;
 minimum_samples = round((0.8 * delta_tk) / Ts); % minimum number of samples between to peaks obtained exploiting eqn (68): tk = k*pi-phi/w so t_k+1-t_k = pi/w 
 
@@ -56,4 +41,5 @@ wn_est = w_est/sqrt(1-delta_est^2);         % estimate of the natural frequency
 Bb_est = mld.Jb*2*delta_est*wn_est;   % estimate of the beam friction coefficient
 k_est = mld.Jb*wn_est^2;              % estimate of the elastic joint stiffness
 
+%%
 save('est_param_resonant.mat', 'Bb_est', 'k_est')

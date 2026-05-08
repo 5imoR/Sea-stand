@@ -2,13 +2,11 @@
 clear all
 clc
 
-%% CODE AND SIMULATION SETUP: ONLY MODIFIABLE PART
+% CODE AND SIMULATION SETUP: ONLY MODIFIABLE PART
 
-controller_choice = 1; % 1 = PID, 2 = EIGENV_ALL, 3 = LQR_SRL, 4 = LQR_BRYSON 
-test_number = 1; 
+test_number = 7; 
 
-
-%% LOAD PARAMETERS
+% LOAD PARAMETERS
 load ('./../resonant_params.mat');                      % Nominal motor and load parameters
 load ('./../est_param.mat','B_eq_est','tau_sf_est');    % Estimated friction parameters 
 load ('./../est_param_resonant.mat');                   % Estimated elastic joint parameters
@@ -25,7 +23,7 @@ t0 = 0.2;
 % -------- RIFARE ROOT LOCUS A PARTE -----------------------
 
 
-%% SIMULATION MENU
+% SIMULATION MENU
 
 switch test_number
     case 1
@@ -33,52 +31,52 @@ switch test_number
         controller_choice = 1;
         step_amplitude = 50;
         antiwindup = 1;
-        field_name = 'dati_PID_50_NO_AW.mat';
+        field_name = 'dati_PID_50_NO_AW';
         
     case 2
         disp('-->  TEST 2: PID at 50 deg WITH Anti-Windup');
         controller_choice = 1;
         step_amplitude = 50;
         antiwindup = 2;
-        field_name = 'dati_PID_50_AW.mat';
+        field_name = 'dati_PID_50_AW';
         
     case 3
         disp('--> TEST 3: PID at 120 deg WITHOUT Anti-Windup');
         controller_choice = 1;
         step_amplitude = 120;
         antiwindup = 1;
-        field_name = 'dati_PID_120_NO_AW.mat';
+        field_name = 'dati_PID_120_NO_AW';
         
     case 4
         disp('--> TEST 1: PID at 120 deg WITH Anti-Windup');
         controller_choice = 1;
         step_amplitude = 120;
         antiwindup = 2;
-        field_name = 'dati_PID_120_AW.mat';
+        field_name = 'dati_PID_120_AW';
         
     case 5
         disp('--> TEST 5: State-Space (Eigenvalues) at 50 deg');
         controller_choice = 2;
         step_amplitude = 50;
-        field_name = 'dati_SS_Eigen_50.mat';
+        field_name = 'dati_SS_Eigen_50';
         
     case 6
         disp('--> Eseguo TEST 6: LQR (SRL) at 50 deg');
         controller_choice = 3;
         step_amplitude = 50;
-        field_name = 'dati_LQR_SRL_50.mat';
+        field_name = 'dati_LQR_SRL_50';
         
     case 7
         disp('--> Eseguo TEST 7: LQR (Bryson) at 50 deg');
         controller_choice = 4;
         step_amplitude = 50;
-        field_name = 'dati_LQR_Bryson_50.mat';
+        field_name = 'dati_LQR_Bryson_50';
         
     otherwise
         error('ERROR: choose a number from 1 to 7');
 end
 
-%%
+%
 
 if controller_choice ~= 1 
 
@@ -134,7 +132,7 @@ switch controller_choice
             Kw = 0;
         end 
 
-        model_name = 'real_LAB3_PID';
+        model_name = 'real_LAB3_PID_2024';
 
     case 2
 
@@ -145,7 +143,7 @@ switch controller_choice
         ts = 0.85;  % Settling time [s]
         
         delta = (log(1/Mp))/sqrt(pi^2+(log(1/Mp))^2);
-        w_n = 3/(delta*ts); 
+        w_n = 2*3/(delta*ts); 
 
         phi = atan(sqrt(1-delta^2)/(delta));
         p1 = w_n*exp(1i*(-pi+(phi)));     % First pair of dominant poles
@@ -157,7 +155,7 @@ switch controller_choice
         % State feedback matrix
         K = place(A, B, poles);  
         
-        model_name = 'real_LAB3_SS';
+        model_name = 'real_LAB3_SS_2024';
 
 
     case 3
@@ -181,12 +179,12 @@ switch controller_choice
         % hold off
         
         % Gain 1/r chosen graphically to keep poles inside the desired performance region
-        r = 1/4.59e3;
+        r = 1/3.89e3;
         
         % Compute LQR gain matrix (Standard cost function with Q = C'*C)
         K = lqr(sysG, C'*C, r);
 
-        model_name = 'real_LAB3_SS';
+        model_name = 'real_LAB3_SS_2024';
 
     case 4
         
@@ -201,21 +199,21 @@ switch controller_choice
         % Compute LQR gain matrix using Bryson's Rule weights
         K = lqr(sysG,Q,R);
 
-        model_name = 'real_LAB3_SS';
+        model_name = 'real_LAB3_SS_2024';
 
     otherwise
         
         error('ERROR - CHOICE IS NOT VALID! Choose 1, 2 or 3.');
 end 
 
-%% 3. ESECUZIONE SIMULINK DESKTOP REAL-TIME
+% 3. ESECUZIONE SIMULINK DESKTOP REAL-TIME
 disp(['Model opening: ', model_name]);
 open_system(model_name);
 
 Tsim = 5;
 set_param(model_name, 'StopTime', num2str(Tsim));
 set_param(model_name, 'SolverType', 'Fixed-step');
-set_param(model_name, 'Solver', 'FixedStepDiscrete'); 
+% set_param(model_name, 'Solver', 'Auto'); 
 set_param(model_name, 'FixedStep', num2str(Ts)); 
 set_param([model_name, '/Step'], 'After', num2str(step_amplitude));
 set_param([model_name, '/Step'], 'Time', '1');
@@ -243,7 +241,7 @@ end
 
 Data_Lab3.(field_name).thh_meas = thh_meas;
 Data_Lab3.(field_name).thh_ref  = thh_ref;
-Data_Lab3.(field_name).u        = u;
+%Data_Lab3.(field_name).u        = u;
 if exist('thd_meas', 'var')
     Data_Lab3.(field_name).thd_meas = thd_meas;
 end

@@ -1,0 +1,15 @@
+%% CREAZIONE DELLA STRUTTURA UNICA E SALVATAGGIO DEI DATI
+
+field_name1 = 'PID360';
+field_name2 = 'NO_AW'; % 'SI_AW'
+
+if isfile('results_LAB1.mat')
+    load('results_LAB1.mat', 'Data_Lab1');
+end
+
+Data_Lab1.(field_name1).(field_name2).pos = pos;
+Data_Lab1.(field_name1).(field_name2).sat_in = sat_in;
+Data_Lab1.(field_name1).(field_name2).sat_out = sat_out;
+Data_Lab1.(field_name1).(field_name2).track_error = track_error;
+
+save('results_LAB1.mat', 'Data_Lab1');

@@ -20,7 +20,7 @@ sens.mpu.gyro.noisevar = sens.mpu.gyro.noisestd^2;
 % 1 = Nominal tracking 
 % 2 = Robust tracking 
 
-test_number = 2;
+test_number = 1;
 
 % Lagrangian Dynamic Equation: matrix formulation
 % M(q)

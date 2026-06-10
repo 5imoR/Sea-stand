@@ -1,0 +1,12 @@
+\subsection{System and Model}
+The experimental setup involves the Quanser SRV-02 DC gearmotor. The electromechanical dynamics originate from the interaction between the armature current and the magnetic field of the stator magnets. By neglecting the high-frequency dynamics of the electrical circuit and the voltage driver, the relationship between the input voltage $u(t)$ and the load angular position $\vartheta_l(t)$ is modeled by the following transfer function:
+
+\begin{equation}
+    P(s) = \frac{\Theta_l(s)}{U(s)} = \frac{k_m}{s(T_m s + 1)N}
+\end{equation}
+
+where $k_m$ represents the motor gain and $T_m$ the mechanical time constant, defined as:
+\begin{equation}
+    k_m = \frac{k_{drv} k_t}{R_{eq} B_{eq} + k_t k_e}, \quad T_m = \frac{R_{eq} J_{eq}}{R_{eq} B_{eq} + k_t k_e}
+\end{equation}
+The term $N=14$ denotes the gearbox reduction ratio, while $R_{eq}$ is the sum of the armature resistance and the shunt resistor. This second-order model serves as the baseline for the state-space representation $\Sigma = (A, B, C, 0)$ utilized in the subsequent controller design.

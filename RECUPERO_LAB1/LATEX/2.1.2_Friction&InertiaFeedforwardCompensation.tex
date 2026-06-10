@@ -1,0 +1,5 @@
+\subsubsection{Friction and Inertia Feedforward Compensation}
+A feedforward action was incorporated to improve tracking accuracy by compensating for estimated nonlinearities. The control signal $u_{ff}$ accounts for inertia torque, viscous and static friction, and BEMF:
+\begin{equation}
+    u_{ff} = \frac{N R_{eq} J_{eq}}{k_{drv} k_t} \dot{\omega}_l^* + \frac{R_{eq}}{k_{drv} k_t N} [N^2 B_{eq} \omega_l^* + \tau_{sf} \text{sign}(\omega_l^*)] + \frac{N k_e}{k_{drv}} \omega_l^*
+\end{equation}

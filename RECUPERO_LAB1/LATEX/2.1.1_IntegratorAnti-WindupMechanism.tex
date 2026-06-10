@@ -1,0 +1,6 @@
+\subsubsection{Integrator Anti-Windup Mechanism}
+To mitigate the integrator windup effect caused by actuator saturation, a local feedback loop was implemented around the integrator. The anti-windup gain was selected as $K_W = 1/T_W$, with the time constant $T_W$ set to $t_{s,5\%}/5$ as a primary trial. 
+
+% INSERIRE QUI:
+% - Figura della risposta al gradino (360 deg) comparando PID standard vs PID con anti-windup.
+% - Tabella dei KPI (Overshoot, Settling time).

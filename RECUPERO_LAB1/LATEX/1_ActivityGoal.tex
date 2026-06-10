@@ -1,2 +1,20 @@
 \subsection{Activity Goal}
-The primary objective of this laboratory session is the design, implementation, and experimental validation of advanced state-space control strategies for the angular position of a DC servomotor. The activity is structured into two main parts: first, the enhancement of a pre-existing PID controller through the integration of an anti-windup scheme and a multi-term feedforward compensator for friction and inertia. Second, the development of a continuous-time position control system using state-space techniques, addressing both nominal tracking requirements and robust tracking in the presence of disturbances and time-varying references.
+This laboratory activity is structured into two main parts. The first part focuses on the implementation of two major improvements to the PID controller designed in the previous laboratory session, namely an anti-windup mechanism and a feedforward compensation action.. The second part deals with the development of continuous-time state-space position controllers.
+
+The state-space design was addressed in two different scenarios: nominal tracking, which is designed to asymptotically track the reference signal in ideal conditions, and robust tracking, which ensures accurate tracking even in the presence of external disturbances.
+
+To achieve robust tracking, different methodologies were investigated:
+
+Integral Action: Augmenting the nominal controller with an integral state ensures zero steady-state error for constant step references and perfect rejection of constant load disturbances.
+
+Error-Space Approach: Utilizing the internal model principle, this method reformulates the tracking task as a regulation problem within the error space to robustly track complex, time-varying signals.
+%SE SI DECIDE DI FARLO
+%Extended Estimator Approach: This strategy employs an extended state observer to estimate both the reference and the input disturbance, achieving robust tracking through an active feedforward cancellation.
+
+
+%Augmenting the nominal state-space design with an integral action.
+
+%Applying the internal model principle through the error-space approach to track complex reference signals.
+
+
+%Finally, a second design based on the internal model principle was implemented using the extended estimator approach.

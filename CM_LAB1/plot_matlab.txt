@@ -1,0 +1,49 @@
+%------------------- 40 deg -------------------------- 
+clc
+clear all
+
+% Load data
+load('C:\Users\ester\Desktop\Sea-stand\CM_LAB1\dati_nominal\40NoFR.mat');
+load('C:\Users\ester\Desktop\Sea-stand\CM_LAB1\dati_nominal\r40.mat');
+fr = load('C:\Users\ester\Desktop\Sea-stand\CM_LAB1\dati_nominal\40FR.mat');
+tr = load('C:\Users\ester\Desktop\Sea-stand\CM_LAB1\dati_nominal\40tr.mat');
+load('C:\Users\ester\Desktop\Sea-stand\RECUPERO_LAB1\results_LAB1.mat');
+
+% Variable assignment
+y2 = fr.y;
+t2 = tr.t; 
+r2 = tr.r; 
+
+t_raw = Data_Lab1.SS_nominal.deg40.pos.time;
+y_raw = Data_Lab1.SS_nominal.deg40.pos.signals.values;
+
+t_shifted = t_raw + 1; 
+t_plot = [0; t_shifted];
+y_plot = [y_raw(1); y_raw]; 
+r_plot = zeros(size(t_plot)); % Vettore di zeri lungo quanto t_plot
+r_plot(t_plot >= 1) = 40;     % Imposta a 40 tutti i valori dopo 1 secondo
+
+
+figure(1);
+
+plot(t, r, 'b--', 'LineWidth', 1); hold on
+plot(t, y, 'color', [1 0.8 0], 'LineWidth', 1); hold on
+plot(t2, y2, 'r', 'LineWidth', 1); hold on
+plot(t_plot, y_plot, 'g', 'LineWidth', 1); hold on
+
+
+yline(40*1.05, ':k', 'Linewidth', 0.5)
+yline(40*0.95, 'Color', 'black', 'LineWidth', 0.5, 'Label', 'Settling time threshold','LabelHorizontalAlignment','left', 'LineStyle', ':', 'FontSize', 8);
+yline(40*1.1, 'Color', 'black', 'LineWidth', 0.5, 'Label', 'Maximum overshoot required', 'LineStyle', '-.','LabelHorizontalAlignment','left', 'FontSize', 8);
+
+grid on
+xlim([0 5]) 
+ylim([-5 55]) % Aggiunto per staccare il segnale dall'asse X
+xlabel('Time [s]')
+ylabel('Position [deg]')
+legend('Reference', 'Response without static friction', 'Response with static friction', 'Location', 'southeast')
+
+% General title
+%sgtitle('Nominal tracking of 40deg step reference')
+
+% savefig('nominal40_all')

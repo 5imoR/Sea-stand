@@ -1,0 +1,42 @@
+% \input{extended}
+
+\subsubsection{Robust Tracking with Extended-State Estimator}
+To achieve perfect steady-state robust tracking of a sinusoidal reference, the extended-state estimator approach was tested. This method relies on the internal model principle. The state feedback matrix $K$ was designed using the poles from the nominal tracking design. The extended estimator poles were placed according to the assignment specifications.
+
+\subsubsection{Tracking of a $T_r = 0.5$ s Sinusoidal Reference}
+Similar to the error-space approach, the controller was tested with a sinusoidal reference. For amplitudes of $30^\circ$ and $60^\circ$, the system successfully tracks the signal and drives the error to zero. However, for an amplitude of $90^\circ$, the calculated control effort $u$ is excessively large. This causes saturation within the DAC and voltage driver, leading to system instability. To solve this issue, a saturation block was added exclusively to the control input $u$ of the observer, while the tracking error input was left unconstrained. The Simulink block diagram detailing this modification is reported in the Appendix. This adjustment yielded a proper and stable response.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{FIGURES/6_30.pdf}
+    \vspace{0.2cm}
+    
+    \includegraphics[width=0.8\textwidth]{FIGURES/6_60.pdf}
+    \vspace{0.2cm}
+    
+    \includegraphics[width=0.8\textwidth]{FIGURES/6_90.pdf}
+    \caption{Closed-loop response to sinusoidal references ($T_r = 0.5$ s) with amplitudes of $30^\circ$ (top), $60^\circ$ (middle), and $90^\circ$ (bottom). The plots compare ideal conditions (no friction) with realistic conditions (with static friction).}
+    \label{fig:ext_est_point6}
+\end{figure}
+
+\clearpage
+
+\subsubsection{Tracking of a $T_r = 0.1$ s Sinusoidal Reference}
+In this scenario, the behavior is similar to the error-space method. The system is tuned to track a specific frequency ($\omega_0$). Therefore, it fails to drive the tracking error to zero for an unmodeled reference frequency. The internal model embedded in the observer does not contain the necessary dynamic modes to track the $T_r = 0.1$ s signal, violating the internal model principle.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{FIGURES/7.pdf}
+    \caption{Comparison of the tracking errors. The blue line represents the error for the nominal reference ($T_r = 0.5$ s). The orange line shows the error when tracking an unmodeled reference ($T_r = 0.1$ s).}
+    \label{fig:ext_est_point7}
+\end{figure}
+
+\subsubsection{Robust Tracking of a Step Reference}
+Initially, the system appeared unable to track a constant step reference. Similar to the $90^\circ$ sinusoidal tracking test, this problem was caused by actuator saturation. The abrupt step input generates a massive initial error, which aggressively excites the un-damped sinusoidal modes of the observer. This forces the actuator to saturate and drives the uncompensated system into a sustained limit cycle. However, by applying the previously mentioned modification (i.e., inserting a saturation block solely on the control input $u$ of the observer) as shown in the Appendix, the excitation is constrained. This allows the system to successfully track the step reference and eventually drive the steady-state error to zero.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{FIGURES/8.pdf}
+    \caption{Closed-loop step response ($40^\circ$). The uncompensated system falls into a limit cycle due to the excitation of the observer's sinusoidal modes combined with actuator saturation.}
+    \label{fig:ext_est_point8}
+\end{figure}
